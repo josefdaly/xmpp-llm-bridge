@@ -14,10 +14,10 @@ def format_message(prompt: str, role: str) -> str:
 def set_message(message: str, sender: str, role: str) -> str:
     redis_client = get_redis_client()
     msg = format_message(message, role)
-    redis_client.rpush(sender, json.dumps(msg))
+    redis_client.rpush(str(sender), str(json.dumps(msg)))
 
 
 def get_messages(sender: str) -> list[str]:
     redis_client = get_redis_client()
-    messages = redis_client.lrange(sender, 0, -1)
+    messages = redis_client.lrange(str(sender), 0, -1)
     return [json.loads(msg.decode('utf-8')) for msg in messages]

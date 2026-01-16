@@ -26,7 +26,8 @@ def pull_model(model_name: str):
 
 
 def get_llm_reply(prompt: str, sender: str) -> str:
-    
+    print(prompt)
+    print(sender)
     set_message(prompt, sender, ROLE_USER)
     messages = get_messages(sender)
     
