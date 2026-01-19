@@ -8,7 +8,7 @@ services:
       - .env.dev
     networks:
       - app_net
-    command: ["/app/.venv/bin/python", "main.py"]
+    command: ["/app/.venv/bin/python", "listen_for_messages.py"]
     develop:
       watch:
         - path: ./app
