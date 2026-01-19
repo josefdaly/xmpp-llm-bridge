@@ -9,7 +9,7 @@ from settings import XMPP_USER, XMPP_USER_PASSWORD, XMPP_SERVER
 def main():
     client = xmpp.Client(XMPP_SERVER)
     client.connect(server=(XMPP_SERVER,5222))
-    client.auth(XMPP_USER, XMPP_USER_PASSWORD, 'botty-worker')
+    client.auth(XMPP_USER, XMPP_USER_PASSWORD, 'sender')
     client.sendInitPresence()
 
     while True:
@@ -23,7 +23,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except:
-        main()
+    main()
