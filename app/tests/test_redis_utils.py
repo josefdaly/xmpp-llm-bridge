@@ -2,7 +2,8 @@ import pytest
 from fakeredis import FakeRedis
 
 
-from redis_utils import get_redis_client, set_message, get_messages, format_message, REDIS_HOST, REDIS_PORT
+from redis_utils import get_redis_client, set_message, get_messages, queue_job, pull_job
+
 
 def test_set_and_get_message():
     # Use FakeRedis for testing
@@ -23,3 +24,21 @@ def test_set_and_get_message():
         {'role': 'user', 'content': 'I forgot my password.'}
     ]
     assert messages == expected
+
+
+def test_queue_and_pull_job():
+    fake_redis = FakeRedis()
+
+    sender_user1 = 'user1@domain'
+    sender_user2 = 'user2@domain'
+
+    queue_job(sender_user1, fake_redis)
+    queue_job(sender_user2, fake_redis)
+
+    pulled1 = pull_job(fake_redis)
+    pulled2 = pull_job(fake_redis)
+    pulled3 = pull_job(fake_redis)  # Should be None since queue is empty
+
+    assert pulled1 == sender_user1
+    assert pulled2 == sender_user2
+    assert pulled3 is None

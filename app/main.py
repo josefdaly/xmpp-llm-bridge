@@ -1,5 +1,7 @@
 import xmpp
-from tasks.reply import consume_and_process_message
+
+from redis_utils import redis_client, set_message, queue_job
+from ollama import ROLE_USER
 from settings import XMPP_USER, XMPP_USER_PASSWORD, XMPP_SERVER
 
 
@@ -21,13 +23,10 @@ def messageCB(conn, message):
     # You can add logic here to process the message, e.g., reply
     if message.getType() == 'chat':
         msg = message.getBody()
-        try:
-            llm_reply = consume_and_process_message(msg, message.getFrom())
-        except Exception as e:
-            llm_reply = "Sorry, I'm having trouble connecting to the LLM service."
-        reply = xmpp.Message(message.getFrom(), llm_reply)
-        reply.setAttr('type', 'chat')
-        conn.send(reply)
+        user_sender = message.getFrom()
+
+        set_message(msg, user_sender, ROLE_USER, redis_client)
+        queue_job(user_sender, redis_client)
 
 
 if __name__ == "__main__":

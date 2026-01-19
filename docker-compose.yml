@@ -9,6 +9,26 @@ services:
     networks:
       - app_net
     command: ["/app/.venv/bin/python", "main.py"]
+    develop:
+      watch:
+        - path: ./app
+          action: sync
+          target: /app
+
+  message-processor:
+    build: .
+    depends_on:
+      - redis-server
+    env_file:
+      - .env.dev
+    networks:
+      - app_net
+    command: ["/app/.venv/bin/python", "process_messages.py"]
+    develop:
+      watch:
+        - path: ./app
+          action: sync
+          target: /app
 
   redis-server:
     image: redis:7.4-alpine
