@@ -8,6 +8,7 @@ services:
       - .env.dev
     networks:
       - app_net
+    command: ["/app/.venv/bin/python", "main.py"]
 
   redis-server:
     image: redis:7.4-alpine

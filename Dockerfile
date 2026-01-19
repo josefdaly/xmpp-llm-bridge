@@ -5,5 +5,3 @@ COPY ./app /app
 
 WORKDIR /app
 RUN uv sync
-
-ENTRYPOINT ["uv", "run", "main.py"]

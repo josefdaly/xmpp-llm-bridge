@@ -1,5 +1,5 @@
 import xmpp
-from ollama import get_llm_reply
+from tasks.reply import consume_and_process_message
 from settings import XMPP_USER, XMPP_USER_PASSWORD, XMPP_SERVER
 
 
@@ -8,7 +8,6 @@ def main():
     client.connect(server=(XMPP_SERVER,5222))
     client.auth(XMPP_USER, XMPP_USER_PASSWORD, 'botty')
     client.sendInitPresence()
-
     client.RegisterHandler('message', messageCB)
     # Start the main loop to listen for events
     print("Bot is running and listening for messages...")
@@ -22,12 +21,10 @@ def messageCB(conn, message):
     # You can add logic here to process the message, e.g., reply
     if message.getType() == 'chat':
         msg = message.getBody()
-        if not msg:
-            return
-        # try:
-        llm_reply = get_llm_reply(msg, message.getFrom())
-        # except Exception as e:
-        #     llm_reply = "Sorry, I'm having trouble connecting to the LLM service."
+        try:
+            llm_reply = consume_and_process_message(msg, message.getFrom())
+        except Exception as e:
+            llm_reply = "Sorry, I'm having trouble connecting to the LLM service."
         reply = xmpp.Message(message.getFrom(), llm_reply)
         reply.setAttr('type', 'chat')
         conn.send(reply)

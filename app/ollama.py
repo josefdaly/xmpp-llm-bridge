@@ -1,7 +1,6 @@
 import requests
 
-from settings import OLLAMA_BASE_URL
-from redis_utils import set_message, get_messages
+from settings import OLLAMA_BASE_URL, MODEL_NAME
 
 
 ROLE_USER = "user"
@@ -22,28 +21,21 @@ def pull_model(model_name: str):
             "stream": False,
         },
     )
+    response.raise_for_status()
     return response.json()
 
 
-def get_llm_reply(prompt: str, sender: str) -> str:
-    print(prompt)
-    print(sender)
-    set_message(prompt, sender, ROLE_USER)
-    messages = get_messages(sender)
-    
+def get_llm_reply(messages: list, token_limit: int) -> str:
     response = requests.post(
         f"{OLLAMA_BASE_URL}/api/chat",
         json={
-            "model": "gemma3",
+            "model": MODEL_NAME,
             "messages": messages,
             "stream": False,
             "options": {
-                "num_predict": 100
+                "num_predict": token_limit
             }     
         },
     )
-    response_json = response.json()
-    reply = response_json['message']['content']
-    set_message(reply, sender, ROLE_ASSISTANT)
-
-    return reply
+    response.raise_for_status()
+    return response.json()
